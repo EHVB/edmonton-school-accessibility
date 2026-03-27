@@ -127,7 +127,8 @@ var BIKE_ROUTE_COLOR = '#2266ff';
 // ============================================================
 // MAP INIT
 // ============================================================
-var map = L.map('map',{zoomControl:false}).setView([53.546,-113.494],11);
+var map = L.map('map',{zoomControl:false,attributionControl:false}).setView([53.546,-113.494],11);
+L.control.attribution({prefix:false}).addTo(map);
 L.control.zoom({position:'topright'}).addTo(map);
 
 // Canvas renderer for large layers (sidewalks 318K, bike routes 8K)
@@ -135,9 +136,9 @@ var canvasRenderer = L.canvas({padding:0.5});
 
 // Basemap layers
 var basemapLight = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png',{
-  attribution:'(C) OpenStreetMap contributors (C) CARTO',maxZoom:19});
+  attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',maxZoom:19});
 var basemapDark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png',{
-  attribution:'(C) OpenStreetMap contributors (C) CARTO',maxZoom:19});
+  attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',maxZoom:19});
 basemapLight.addTo(map);
 var currentBasemap = 'light';
 
