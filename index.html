@@ -130,6 +130,9 @@ var BIKE_ROUTE_COLOR = '#2266ff';
 var map = L.map('map',{zoomControl:false}).setView([53.546,-113.494],11);
 L.control.zoom({position:'topright'}).addTo(map);
 
+// Canvas renderer for large layers (sidewalks 318K, bike routes 8K)
+var canvasRenderer = L.canvas({padding:0.5});
+
 // Basemap layers
 var basemapLight = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png',{
   attribution:'(C) OpenStreetMap contributors (C) CARTO',maxZoom:19});
@@ -178,9 +181,12 @@ function toggleLayer(id, cb) {
   if (cb.checked) {
     if (!entry.loaded && !entry.loading) {
       entry.loading = true;
+      document.getElementById('loading').classList.remove('hidden');
+      document.getElementById('loading').innerHTML = '<div class="spinner"></div>Loading layer...';
       loadLayerData(id, function() {
         entry.loaded = true;
         entry.loading = false;
+        document.getElementById('loading').classList.add('hidden');
         showLayer(id);
       });
     } else {
@@ -323,20 +329,25 @@ function loadLayerData(id, cb) {
     }); return;
   }
 
-  // Sidewalks
+  // Sidewalks — use Canvas renderer for 318K features
   if (id === 'sidewalks') {
     fetchJSON('data/sidewalks.geojson', function(data){
-      LAYERS[id].layer = L.geoJSON(data, {style:{color:SIDEWALK_COLOR,weight:1.4,opacity:.6},interactive:false});
+      LAYERS[id].layer = L.geoJSON(data, {
+        renderer: canvasRenderer,
+        style:{color:SIDEWALK_COLOR,weight:1.4,opacity:.6},
+        interactive:false
+      });
       cb();
     }); return;
   }
 
-  // Bike routes
+  // Bike routes — use Canvas renderer for performance
   if (id === 'bike_routes') {
     fetchJSON('data/bike_routes.geojson', function(data){
       LAYERS[id].layer = L.geoJSON(data, {
+        renderer: canvasRenderer,
         style:function(f){return {color:BIKE_ROUTE_COLOR,weight:2.5,opacity:.75}},
-        onEachFeature:function(f,layer){layer.bindTooltip(f.properties.classification||'');}
+        interactive:false
       });
       cb();
     }); return;
