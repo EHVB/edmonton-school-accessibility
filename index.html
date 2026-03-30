@@ -330,27 +330,25 @@ function loadLayerData(id, cb) {
     }); return;
   }
 
-  // Sidewalks — single merged MultiLineString for performance
+  // Sidewalks — use Canvas renderer for 318K features
   if (id === 'sidewalks') {
     fetchJSON('data/sidewalks.geojson', function(data){
       LAYERS[id].layer = L.geoJSON(data, {
         renderer: canvasRenderer,
         style:{color:SIDEWALK_COLOR,weight:1.4,opacity:.6},
-        interactive:false,
-        pane:'overlayPane'
+        interactive:false
       });
       cb();
     }); return;
   }
 
-  // Bike routes — single merged MultiLineString for performance
+  // Bike routes — use Canvas renderer for performance
   if (id === 'bike_routes') {
     fetchJSON('data/bike_routes.geojson', function(data){
       LAYERS[id].layer = L.geoJSON(data, {
         renderer: canvasRenderer,
-        style:{color:BIKE_ROUTE_COLOR,weight:2.5,opacity:.75},
-        interactive:false,
-        pane:'overlayPane'
+        style:function(f){return {color:BIKE_ROUTE_COLOR,weight:2.5,opacity:.75}},
+        interactive:false
       });
       cb();
     }); return;
